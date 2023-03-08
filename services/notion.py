@@ -18,7 +18,6 @@ class HEADING(Enum):
     TYPE2 = "heading_2"
     TYPE3 = "heading_3"
 
-
 class LIST_ITEM_PREFIX(Enum):
     DASH = "^- "
     ASTERISK = "^\* "
@@ -552,7 +551,7 @@ class Notion:
     def __get_token_v2(self):
 
         with sync_playwright() as p:
-            browser = p.firefox.launch(headless = False)
+            browser = p.firefox.launch(headless = True)
             context = browser.new_context()
             page = context.new_page()
             page.goto('https://www.notion.so/login')
@@ -1068,9 +1067,7 @@ class Notion:
 
         directory = unzip_folder
         utils.unzip_from_url(url = exportURL, directory = directory)
-        filename = glob.glob(directory + '/*.md')[0]
-        md_file_path = os.path.join(directory, filename)
-
+        md_file_path = glob.glob(directory + '/*.md')[0]
         md_content = read_md(md_file_path = md_file_path)
         md_content = replace_line_with_newpage(md_content = md_content)
 
