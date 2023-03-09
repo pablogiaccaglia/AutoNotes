@@ -572,7 +572,6 @@ class Notion:
     def read_page(self, page_id, headers):
         readUrl = f"https://api.notion.com/v3/blocks/{page_id}/children"
         res = requests.request("GET", readUrl, headers = headers)
-
         data = res.json()
         if res.status_code == 200:
             with open('db.json', 'w', encoding = 'utf8') as f:
@@ -586,7 +585,7 @@ class Notion:
         if res.status_code == 200:
             with open('db.json', 'w', encoding = 'utf8') as f:
                 json.dump(data, f, ensure_ascii = False, indent = 4),
-            return res
+            return data
 
     def get_heading_block(self, fatherBlock) -> HeadingBlock:
 
@@ -740,6 +739,8 @@ class Notion:
 
         table_lines = []
 
+        h1_has_occurred = False
+
         for line in lines:
 
             if re.match(LIST_ITEM_PREFIX.DASH.value, line) \
@@ -777,13 +778,20 @@ class Notion:
                 is_toggleable = False
                 clean_line = None
                 if line.startswith("# "):
-                    heading_type = HEADING.TYPE1.value
-                    is_toggleable = True
-                    fatherBlock = firstFatherBlock
-                    bulletFatherBlock = firstFatherBlock
 
-                    if title:
-                        clean_line = title
+                    if h1_has_occurred:
+                        heading_type = HEADING.TYPE2.value
+
+                    else:
+
+                        h1_has_occurred = True
+                        heading_type = HEADING.TYPE1.value
+                        is_toggleable = True
+                        fatherBlock = firstFatherBlock
+                        bulletFatherBlock = firstFatherBlock
+
+                        if title:
+                            clean_line = title
 
                 elif line.startswith("## "):
                     heading_type = HEADING.TYPE2.value
@@ -964,39 +972,11 @@ class Notion:
 
     def create_section(self, page_id, content, image_url = None, title = None):
 
+        page_id = utils.format_notion_id(id = page_id)
         page = self.get_page_block(page_id = page_id)
 
         self.__parse_content(content = content, firstFatherBlock = page, image_url = image_url, title = title)
         return None
-
-    def test(self, page_id):
-
-        fatherBlock = self.get_page_block(page_id = page_id)
-
-        header = ['**Day**', '**Outlook**', '**Temperature [Humidity]**', '**Wind**', '**Play**']
-
-        rows = [['1', 'Sunny', 'High [Humid]', 'Weak', 'No'], ['2', 'Sunny', 'High [Humid]', 'Strong', 'No'],
-                ['3', 'Overcast', 'High [Humid]', 'Weak', 'Yes'], ['4', 'Rain', 'High [Humid]', 'Weak', 'Yes'],
-                ['5', 'Rain', 'Normal [Humid]', 'Weak', 'Yes'], ['6', 'Rain', 'Normal [Dry]', 'Strong', 'No'],
-                ['7', 'Overcast', 'Normal [Dry]', 'Strong', 'Yes'], ['8', 'Sunny', 'High [Humid]', 'Weak', 'No'],
-                ['9', 'Sunny', 'Normal [Dry]', 'Weak', 'Yes'], ['10', 'Rain', 'Normal [Dry]', 'Weak', 'Yes'],
-                ['11', 'Sunny', 'Normal [Humid]', 'Strong', 'Yes'], ['12', 'Overcast', 'High [Dry]', 'Strong', 'Yes'],
-                ['13', 'Overcast', 'Normal [Humid]', 'Weak', 'Yes'], ['14', 'Rain', 'High [Humid]', 'Strong', 'No']]
-
-        table = self.get_table_block(fatherBlock = fatherBlock)
-
-        table_data = self.get_table_data(width = len(header), has_row_header = True, has_column_header = False)
-        table.standaloneDict = table_data
-
-        rows.insert(0, header)
-
-        for row in rows:
-            row_block = self.get_table_row(fatherBlock = table)
-
-            for elem in row:
-                self.__parse_block_with_blod(fatherBlock = row_block, content = elem)
-
-        self.execute_append_block(fatherBlock)
 
     def __get_content_download_URL(self, page_id):
         self.notion_token_v2 = self.__get_token_v2()
@@ -1021,7 +1001,7 @@ class Notion:
 
         res = self.__request(type_ = 'POST', url = "https://www.notion.so/api/v3/enqueueTask", headers = header,
                              payload = enqueue_payload)
-        task_id = res.json()['taskId']
+        task_id = res['taskId']
         task_payload = {"taskIds": [task_id]}
 
         completed = False
@@ -1031,7 +1011,7 @@ class Notion:
             res = self.__request(type_ = 'POST', url = "https://www.notion.so/api/v3/getTasks", headers = header,
                                  payload = task_payload)
 
-            results = res.json()['results']
+            results = res['results']
 
             task = next(item for item in results if item["id"] == task_id)
 
@@ -1051,7 +1031,7 @@ class Notion:
                         password = None,
                         unzip_folder = 'unzips',
                         pdf_name = "generated_pdf.pdf",
-                        pdf_folder = '',
+                        pdf_folder = 'pdfs',
                         css_file_path = None,
                         base_images_url = None):
 
@@ -1068,8 +1048,8 @@ class Notion:
         directory = unzip_folder
         utils.unzip_from_url(url = exportURL, directory = directory)
         md_file_path = glob.glob(directory + '/*.md')[0]
-        md_content = read_md(md_file_path = md_file_path)
-        md_content = replace_line_with_newpage(md_content = md_content)
+        #md_content = read_md(md_file_path = md_file_path)
+        #md_content = replace_line_with_newpage(md_content = md_content)
 
         if not os.path.exists(pdf_folder):
             os.makedirs(pdf_folder)
@@ -1077,6 +1057,7 @@ class Notion:
         pdf_file_path = os.path.join(pdf_folder, pdf_name)
 
         md2pdf(pdf_file_path = pdf_file_path,
-               md_content = md_content,
+               md_content = None,
+               md_file_path = md_file_path,
                css_file_path = css_file_path,
                base_url = base_images_url)

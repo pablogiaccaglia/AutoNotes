@@ -7,15 +7,14 @@ import numpy as np
 
 
 def img2text(image):
-
     # convert the image to black and white for better OCR
     ret, thresh1 = cv2.threshold(image, 120, 255, cv2.THRESH_BINARY)
 
     # pytesseract image to string to get results
-    text = pytesseract.image_to_string(thresh1, config = '--psm 4 --oem 1', lang='eng')
+    text = pytesseract.image_to_string(thresh1, config = '--psm 4 --oem 1', lang = 'ita')
 
     if not text:
-        text = pytesseract.image_to_string(thresh1, config = '--psm 6 --oem 1', lang='eng')
+        text = pytesseract.image_to_string(thresh1, config = '--psm 6 --oem 1', lang = 'ita')
         return text
 
     else:

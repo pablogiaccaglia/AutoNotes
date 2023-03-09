@@ -15,8 +15,10 @@ class AutoNotes:
                  notion_config
                  ):
 
-        self.chatgpt = Chatbot(api_key = chat_gpt_token)
-        self.notion = Notion(notion_token = notion_config.token, email = notion_config.email, password = notion_config.password)
+        self.chatgpt = Chatbot(api_key = chat_gpt_token, system_prompt = "Sei un professore universitario che mi dovrà spiegare concetti di biofisica cellulare e molecolare, rispondi correttamente usando tutte le parole che vuoi")
+        self.notion = Notion(notion_token = notion_config.token,
+                             email = notion_config.email,
+                             password = notion_config.password)
 
         self.cloudinary = Cloudinary(
                 cloud_name = cloudnary_config.cloudnary_cloud_name,
