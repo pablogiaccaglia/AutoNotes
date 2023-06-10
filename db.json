@@ -1,0 +1,43 @@
+{
+    "results": [
+        {
+            "id": "71a9fcb3-3a27-4b06-8e70-44a80acb9dc7",
+            "eventName": "exportBlock",
+            "request": {
+                "block": {
+                    "id": "926472e1-d53d-4432-a9c5-dabe8396ceba",
+                    "spaceId": "aeda4c81-d992-4018-8df3-466bca41c865"
+                },
+                "recursive": false,
+                "exportOptions": {
+                    "exportType": "markdown",
+                    "timeZone": "Europe/Rome",
+                    "locale": "en",
+                    "collectionViewExportType": "currentView"
+                }
+            },
+            "actor": {
+                "table": "notion_user",
+                "id": "fe3c400e-3a7a-490b-b2c0-5f0dfd3f3544"
+            },
+            "rootRequest": {
+                "eventName": "exportBlock",
+                "requestId": "71a9fcb3-3a27-4b06-8e70-44a80acb9dc7"
+            },
+            "headers": {
+                "ip": "93.56.197.213",
+                "cityFromIp": "Milan",
+                "countryCodeFromIp": "IT",
+                "subdivision1FromIp": "IT-25",
+                "subdivision2FromIp": "IT-MI"
+            },
+            "equeuedAt": 1686393241006,
+            "status": {
+                "type": "complete",
+                "pagesExported": 1,
+                "exportURL": "https://file.notion.so/f/t/ada646c3-7a81-4ba1-b323-e63c1adcf16f/Export-0de97981-7279-4f03-a235-62f2f0201df5.zip?id=5e5e1eda-b7dd-4011-a2ee-160d74403d0a&table=user_export&expirationTimestamp=1686998042634&signature=xCb_ChmJTbC-CBp0lOQRfexbR3JZuPYJD4_8b68dX6E&download=true&downloadName=ada646c3-7a81-4ba1-b323-e63c1adcf16f%2FExport-0de97981-7279-4f03-a235-62f2f0201df5.zip"
+            },
+            "state": "success"
+        }
+    ]
+}

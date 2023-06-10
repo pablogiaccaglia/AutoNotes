@@ -551,7 +551,7 @@ class Notion:
     def __get_token_v2(self):
 
         with sync_playwright() as p:
-            browser = p.firefox.launch(headless = True)
+            browser = p.firefox.launch(headless = False)
             context = browser.new_context()
             page = context.new_page()
             page.goto('https://www.notion.so/login')
@@ -854,7 +854,8 @@ class Notion:
                 blocks.append(paragraph)
 
         dividerBlock = self.get_divider_block(fatherBlock = firstFatherBlock)
-        self.execute_append_block(firstFatherBlock)
+        d = self.execute_append_block(firstFatherBlock)
+
 
     def get_json_table(self, content):
         json_table = []
@@ -980,6 +981,7 @@ class Notion:
 
     def __get_content_download_URL(self, page_id):
         self.notion_token_v2 = self.__get_token_v2()
+        page_id = utils.format_notion_id(page_id)
 
         enqueue_payload = {"task":
                                {"eventName": "exportBlock",
@@ -1022,11 +1024,12 @@ class Notion:
                 exportURL = task['status']['exportURL']
 
             else:
+                print(task)
                 raise Exception
 
         return exportURL
 
-    def notion2markdown(self, page_id,
+    def tion2markdown(self, page_id,
                         email = None,
                         password = None,
                         unzip_folder = 'unzips',
